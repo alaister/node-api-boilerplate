@@ -2,18 +2,6 @@ import { handleUserErrors } from '../../utils/errors'
 
 export default {
   Mutation: {
-    async signup(_parent, { user: input }, { actions }) {
-      try {
-        const user = await actions.session.signup(input)
-
-        return {
-          userErrors: [],
-          user,
-        }
-      } catch (err) {
-        return handleUserErrors(err)
-      }
-    },
     async login(_parent, { user: input }, { actions }) {
       try {
         const { user, accessToken, refreshToken } = await actions.session.login(

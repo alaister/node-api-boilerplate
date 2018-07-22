@@ -1,5 +1,5 @@
 import User from '../models/User'
-import { AuthenticationError } from '../utils/errors'
+import { ValidationError, AuthenticationError } from '../utils/errors'
 
 export default function makeUserActions(currentUser) {
   return {
@@ -8,7 +8,22 @@ export default function makeUserActions(currentUser) {
         throw new AuthenticationError()
       }
 
-      return await User.findById(currentUser.id)
+      return await User.findById(
+        currentUser.id,
+        'name email createdAt updatedAt'
+      )
+    },
+    async createUser(data) {
+      try {
+        const user = await User.create(data)
+
+        user.password = undefined
+        user.__v = undefined
+
+        return user
+      } catch (err) {
+        throw new ValidationError(err)
+      }
     },
   }
 }

@@ -51,3 +51,23 @@ export function handleUserErrors(err) {
     throw err
   }
 }
+
+export function handleRestErrors(res, err) {
+  if (err instanceof ValidationError) {
+    res.status(422).send({ message: 'Invalid input data', errors: err.errors })
+  } else if (err instanceof NotFoundError) {
+    res.status(404).send({ message: err.message })
+  } else if (err instanceof AuthenticationError) {
+    res.status(401).send({ message: err.message })
+  } else if (err instanceof ForbiddenError) {
+    res.status(403).send({ message: err.message })
+  } else {
+    let error
+
+    if (process.env.NODE_ENV !== 'production') {
+      error = err
+    }
+
+    res.status(500).send({ message: 'Something went wrong', error })
+  }
+}

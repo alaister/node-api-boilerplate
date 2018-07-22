@@ -2,7 +2,7 @@ import express from 'express'
 
 const router = express.Router()
 
-router.get('/', (req, res) => {
+router.get('/', (_req, res) => {
   res.send({ name: 'node-api-boilerplate API', version: '0.1.0' })
 })
 

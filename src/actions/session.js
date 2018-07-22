@@ -17,13 +17,6 @@ export default function makeSessionActions(currentUser) {
     async getSessionsByUserId(userId) {
       return await Session.find({ userId })
     },
-    async signup(data) {
-      try {
-        return await User.create(data)
-      } catch (err) {
-        throw new ValidationError(err)
-      }
-    },
     async login({ email, password }) {
       const user = await User.findOne({ email })
 

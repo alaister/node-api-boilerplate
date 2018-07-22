@@ -4,15 +4,19 @@ import bodyParser from 'body-parser'
 import mongoose from 'mongoose'
 
 import schema from './schema'
+
 import loadJwtMiddleware from './middleware/loadJwt'
 import makeActionsMiddleware from './middleware/makeActions'
-import indexRoutes from './routes'
+
+import indexRoutes from './routes/index'
+import userRoutes from './routes/users'
+import sessionRoutes from './routes/sessions'
 
 const PORT = parseInt(process.env.PORT || 4000, 10)
 const { NODE_ENV } = process.env
 
 mongoose.connect(
-  process.env.MONGO_URL || 'mongodb://localhost:27017/node-api-boilerplate',
+  process.env.MONGO_URI || 'mongodb://localhost:27017/node-api-boilerplate',
   { useNewUrlParser: true }
 )
 mongoose.set('debug', NODE_ENV !== 'production')
@@ -29,6 +33,8 @@ app
 
 // Routes
 app.use('/', indexRoutes)
+app.use('/users', userRoutes)
+app.use('/sessions', sessionRoutes)
 
 const server = new ApolloServer({
   ...schema,
@@ -36,6 +42,11 @@ const server = new ApolloServer({
 })
 
 server.applyMiddleware({ app })
+
+// 404 Handler
+app.use('*', (_req, res) => {
+  res.status(404).send({ error: { message: 'Not found' } })
+})
 
 app.listen({ port: PORT }, () => {
   console.log(`🚀 Server ready at http://localhost:${PORT}/`)

@@ -13,6 +13,7 @@ const userSchema = new Schema(
       trim: true,
       lowercase: true,
       unique: true,
+      required: [true, 'Email is required'],
       validate: {
         validator: isemail.validate,
         message: 'Email address is invalid',
