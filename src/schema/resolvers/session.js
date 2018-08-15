@@ -4,15 +4,12 @@ export default {
   Mutation: {
     async login(_parent, { user: input }, { actions }) {
       try {
-        const { user, accessToken, refreshToken } = await actions.session.login(
-          input
-        )
+        const { user, accessToken } = await actions.session.login(input)
 
         return {
           userErrors: [],
           user,
           accessToken,
-          refreshToken,
         }
       } catch (err) {
         return handleUserErrors(err)
@@ -23,15 +20,6 @@ export default {
         await actions.session.logout()
         // If the session is not found, it means they are already logged out
         return true
-      } catch (err) {
-        return handleUserErrors(err)
-      }
-    },
-    async refreshToken(_parent, { refreshToken }, { actions }) {
-      try {
-        const accessToken = await actions.session.refreshToken(refreshToken)
-
-        return { accessToken }
       } catch (err) {
         return handleUserErrors(err)
       }
@@ -47,14 +35,12 @@ export default {
     },
   },
   Session: {
-    currentSession(
-      session,
-      _args,
-      {
-        user: { jwtId },
+    currentSession(session, _args, ctx) {
+      if (ctx.user && ctx.user.jwtId) {
+        return session.jwtIds.includes(ctx.user.jwtId)
+      } else {
+        return false
       }
-    ) {
-      return session.jwtIds.includes(jwtId)
     },
   },
 }

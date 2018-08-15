@@ -13,6 +13,11 @@ export default function makeUserActions(currentUser) {
         'name email createdAt updatedAt'
       )
     },
+    async batchListUsers(userIds) {
+      const users = await User.findAll({ where: { id: userIds } })
+
+      return userIds.map(id => users.find(user => user.id === id) || null)
+    },
     async createUser(data) {
       try {
         const user = await User.create(data)

@@ -38,15 +38,14 @@ export default function makeSessionActions(currentUser) {
 
       const jwtid = randtoken.uid(24)
 
-      const accessToken = jwt.sign({ id: user.id }, APP_SECRET, {
+      const accessToken = jwt.sign({ sub: user.id }, APP_SECRET, {
         expiresIn: 300,
         jwtid,
       })
-      const refreshToken = randtoken.uid(256)
 
-      await Session.create({ userId: user.id, refreshToken, jwtIds: [jwtid] })
+      await Session.create({ userId: user.id, jwtIds: [jwtid] })
 
-      return { user, accessToken, refreshToken }
+      return { user, accessToken }
     },
     async logout() {
       if (!currentUser) {
@@ -60,27 +59,6 @@ export default function makeSessionActions(currentUser) {
 
       return await session.remove()
     },
-    async refreshToken(refreshToken) {
-      const session = await Session.findOne({ refreshToken })
-
-      if (!session) {
-        throw new NotFoundError('Refresh token not found or expired')
-      }
-
-      const jwtid = randtoken.uid(24)
-
-      const accessToken = jwt.sign({ id: session.userId }, APP_SECRET, {
-        expiresIn: 300,
-        jwtid,
-      })
-
-      session.jwtIds.push(jwtid)
-
-      await session.save()
-
-      return accessToken
-    },
-
     async deleteSession(id) {
       if (!currentUser) {
         throw new AuthenticationError()

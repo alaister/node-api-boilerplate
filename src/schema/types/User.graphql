@@ -29,9 +29,4 @@ type LoginPayload {
   userErrors: [UserError!]!
   user: User
   accessToken: String
-  refreshToken: String
-}
-
-type RefreshTokenPayload {
-  accessToken: String!
 }

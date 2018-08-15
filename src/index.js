@@ -7,6 +7,9 @@ import schema from './schema'
 
 import loadJwtMiddleware from './middleware/loadJwt'
 import makeActionsMiddleware from './middleware/makeActions'
+import makeDataloadersMiddleware from './middleware/makeDataloaders'
+
+import { tokenAutoRefreshExtension } from './extensions'
 
 import indexRoutes from './routes/index'
 import userRoutes from './routes/users'
@@ -16,7 +19,7 @@ const PORT = parseInt(process.env.PORT || 4000, 10)
 const { NODE_ENV } = process.env
 
 mongoose.connect(
-  process.env.MONGO_URI || 'mongodb://localhost:27017/node-api-boilerplate',
+  process.env.MONGODB_URI,
   { useNewUrlParser: true }
 )
 mongoose.set('debug', NODE_ENV !== 'production')
@@ -30,6 +33,7 @@ app
   .use(bodyParser.urlencoded({ extended: true }))
   .use(loadJwtMiddleware)
   .use(makeActionsMiddleware)
+  .use(makeDataloadersMiddleware)
 
 // Routes
 app.use('/', indexRoutes)
@@ -38,7 +42,17 @@ app.use('/sessions', sessionRoutes)
 
 const server = new ApolloServer({
   ...schema,
-  context: ({ req }) => ({ actions: req.actions, user: req.user }),
+  context: ({ req }) => ({
+    actions: req.actions,
+    user: req.user,
+    refreshedAccessToken: req.refreshedAccessToken,
+  }),
+  playground: {
+    settings: {
+      'editor.cursorShape': 'line',
+    },
+  },
+  extensions: [tokenAutoRefreshExtension],
 })
 
 server.applyMiddleware({ app })

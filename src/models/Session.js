@@ -7,10 +7,6 @@ const sessionSchema = new Schema(
       required: [true, 'User ID is required'],
       ref: 'User',
     },
-    refreshToken: {
-      type: String,
-      required: [true, 'Refresh token is required'],
-    },
     jwtIds: {
       type: [String],
       required: [true, 'JWT IDs are required'],

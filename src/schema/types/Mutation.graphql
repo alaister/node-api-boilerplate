@@ -4,6 +4,5 @@ type Mutation {
   signup(user: SignUpInput!): SignUpPayload!
   login(user: LoginInput!): LoginPayload!
   logout: Boolean!
-  refreshToken(refreshToken: String!): RefreshTokenPayload!
   sessionDelete(id: ID!): Boolean!
 }
