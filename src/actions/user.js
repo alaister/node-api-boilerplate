@@ -15,11 +15,11 @@ export default function makeUserActions(currentUser) {
     },
     async batchGetUsers(userIds) {
       const users = await User.find(
-        { id: userIds },
+        { _id: { $in: userIds } },
         'name email createdAt updatedAt'
       )
 
-      return userIds.map(id => users.find(user => user.id === id) || null)
+      return userIds.map(id => users.find(user => id.equals(user.id)) || null)
     },
     async createUser(data) {
       try {
