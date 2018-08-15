@@ -45,6 +45,7 @@ const server = new ApolloServer({
   context: ({ req }) => ({
     actions: req.actions,
     user: req.user,
+    dataloaders: req.dataloaders,
     refreshedAccessToken: req.refreshedAccessToken,
   }),
   playground: {

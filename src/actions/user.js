@@ -14,7 +14,10 @@ export default function makeUserActions(currentUser) {
       )
     },
     async batchGetUsers(userIds) {
-      const users = await User.findAll({ where: { id: userIds } })
+      const users = await User.find(
+        { id: userIds },
+        'name email createdAt updatedAt'
+      )
 
       return userIds.map(id => users.find(user => user.id === id) || null)
     },
