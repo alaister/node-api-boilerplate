@@ -57,6 +57,8 @@ const server = new ApolloServer({
 })
 
 server.applyMiddleware({ app })
+// Fix for ERR_HTTP_HEADERS_SENT error
+app.use('/graphql', () => {})
 
 // 404 Handler
 app.use('*', (_req, res) => {
