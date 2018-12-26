@@ -1,5 +1,0 @@
-#import "./scalars.graphql"
-#import "./UserError.graphql"
-
-#import "./Query.graphql"
-#import "./Mutation.graphql"

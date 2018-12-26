@@ -1,8 +1,0 @@
-#import "./User.graphql"
-
-type Mutation {
-  signup(user: SignUpInput!): SignUpPayload!
-  login(user: LoginInput!): LoginPayload!
-  logout: Boolean!
-  sessionDelete(id: ID!): Boolean!
-}

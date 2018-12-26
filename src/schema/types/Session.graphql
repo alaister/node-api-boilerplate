@@ -1,6 +1,0 @@
-type Session {
-  id: ID!
-  currentSession: Boolean!
-  createdAt: DateTime!
-  expiresAt: DateTime!
-}

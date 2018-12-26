@@ -1,26 +1,31 @@
-import {
-  ApolloError,
-  AuthenticationError as ApolloAuthenticationError,
-  ForbiddenError as ApolloForbiddenError,
-} from 'apollo-server-express'
+import { ValidationError as ObjectionValidationError } from 'objection'
 
-export function ValidationError(error) {
-  this.name = 'ValidationError'
+export function ValidationErrors(errors) {
+  this.name = 'ValidationErrors'
 
-  if (error.length) {
-    this.errors = error
-  } else if (typeof error === 'object') {
-    if (error.errors && !error.errors.length) {
-      this.errors = Object.values(error.errors).map(err => ({
-        message: err.message,
-        field: err.path.split('.'),
-      }))
-    } else {
-      this.errors = [error]
+  this.errors = errors
+}
+
+export function formatUserValidationErrors(error) {
+  if (error instanceof ObjectionValidationError)
+    return {
+      userErrors: Object.entries(error.data).flatMap(([key, errors]) =>
+        errors.map(error => {
+          if (error.keyword === 'unique')
+            return {
+              field: key.split('.'),
+              message: error.message.slice(0, -1),
+            }
+          else
+            return {
+              field: key.split('.'),
+              message: `${key} ${error.message}`,
+            }
+        })
+      ),
     }
-  } else {
-    this.errors = []
-  }
+
+  if (error instanceof ValidationErrors) return { userErrors: error.errors }
 }
 
 export function NotFoundError(message) {
@@ -36,38 +41,4 @@ export function AuthenticationError(message) {
 export function ForbiddenError(message) {
   this.name = 'ForbiddenError'
   this.message = 'You are not allowed to do that' || message
-}
-
-export function handleUserErrors(err) {
-  if (err instanceof ValidationError) {
-    return { userErrors: err.errors }
-  } else if (err instanceof NotFoundError) {
-    throw new ApolloError(err.message, 'NOT_FOUND')
-  } else if (err instanceof AuthenticationError) {
-    throw new ApolloAuthenticationError(err.message)
-  } else if (err instanceof ForbiddenError) {
-    throw new ApolloForbiddenError(err.message)
-  } else {
-    throw err
-  }
-}
-
-export function handleRestErrors(res, err) {
-  if (err instanceof ValidationError) {
-    res.status(422).send({ message: 'Invalid input data', errors: err.errors })
-  } else if (err instanceof NotFoundError) {
-    res.status(404).send({ message: err.message })
-  } else if (err instanceof AuthenticationError) {
-    res.status(401).send({ message: err.message })
-  } else if (err instanceof ForbiddenError) {
-    res.status(403).send({ message: err.message })
-  } else {
-    let error
-
-    if (process.env.NODE_ENV !== 'production') {
-      error = err
-    }
-
-    res.status(500).send({ message: 'Something went wrong', error })
-  }
 }

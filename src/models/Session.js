@@ -1,32 +1,65 @@
-import mongoose, { Schema } from 'mongoose'
+import { Model } from 'objection'
+import { SoftDelete } from '../db/objection'
 
-const sessionSchema = new Schema(
-  {
-    userId: {
-      type: Schema.Types.ObjectId,
-      required: [true, 'User ID is required'],
-      ref: 'User',
-    },
-    jwtIds: {
-      type: [String],
-      required: [true, 'JWT IDs are required'],
-      default: [],
-    },
-    createdAt: {
-      type: Date,
-      expires: 1210000, // 14 Days = 1210000 Seconds
-      default: Date.now,
-    },
-    expiresAt: {
-      type: Date,
-      default: () => {
-        let t = new Date()
-        t.setSeconds(t.getSeconds() + 1210000)
-        return t
+class Session extends SoftDelete(Model) {
+  static get tableName() {
+    return 'sessions'
+  }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['userId', 'expires', 'ip'],
+      properties: {
+        id: { type: 'string' },
+        userId: { type: 'string', minLength: 1, maxLength: 255 },
+        country: { type: 'string' },
+        ip: {
+          type: 'string',
+          oneOf: [
+            { format: 'ipv4' },
+            { format: 'ipv6' },
+            { pattern: '^Unknown$' },
+          ],
+        },
+        expires: { type: 'string', format: 'date-time' },
+        data: { type: 'object' },
+        deleted: { type: 'boolean' },
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
       },
-    },
-  },
-  { timestamps: false }
-)
+    }
+  }
 
-export default mongoose.model('Session', sessionSchema)
+  static get relationMappings() {
+    return {
+      user: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: `${__dirname}/User`,
+        join: {
+          from: 'sessions.userId',
+          to: 'users.id',
+        },
+      },
+    }
+  }
+
+  static create(data) {
+    return this.query().insert(data)
+  }
+
+  static findOne(where) {
+    return this.query()
+      .whereNotDeleted()
+      .where(where)
+      .first()
+  }
+
+  static delete(id) {
+    return this.query()
+      .where('id', id)
+      .delete()
+  }
+}
+
+export default Session

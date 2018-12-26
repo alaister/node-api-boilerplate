@@ -1,63 +1,48 @@
-import mongoose, { Schema } from 'mongoose'
-import isemail from 'isemail'
-import bcrypt from 'bcrypt'
+import { Model } from 'objection'
+import { PasswordModel, UniqueModel } from '../db/objection'
+import BaseModel from './Base'
 
-const userSchema = new Schema(
-  {
-    name: {
-      type: String,
-      required: [true, 'Name is required'],
-    },
-    email: {
-      type: String,
-      trim: true,
-      lowercase: true,
-      unique: true,
-      required: [true, 'Email is required'],
-      validate: {
-        validator: isemail.validate,
-        message: 'Email address is invalid',
+class User extends PasswordModel(UniqueModel(['email'])(BaseModel)) {
+  static get tableName() {
+    return 'users'
+  }
+
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['name', 'email', 'password'],
+      properties: {
+        id: { type: 'string' },
+        name: { type: 'string', minLength: 1, maxLength: 255 },
+        email: {
+          type: 'string',
+          format: 'email',
+          minLength: 1,
+          maxLength: 255,
+        },
+        password: { type: 'string' },
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
       },
-    },
-    password: {
-      type: String,
-      required: [true, 'Password is required'],
-      minlength: [8, 'Password must be a least 8 characters long'],
-    },
-  },
-  { timestamps: true }
-)
-
-userSchema.pre('save', function(next) {
-  const user = this
-
-  if (!user.isModified('password')) {
-    return next()
-  }
-
-  bcrypt.hash(user.password, 13, (err, hash) => {
-    if (err) {
-      return next(err)
     }
-
-    user.password = hash
-    return next()
-  })
-})
-
-userSchema.post('save', function(error, _doc, next) {
-  if (error.name === 'MongoError' && error.code === 11000) {
-    next({
-      message: 'Email address already in use',
-      field: ['email'],
-    })
-  } else {
-    next(error)
   }
-})
 
-userSchema.methods.comparePassword = async function(candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password)
+  static get relationMappings() {
+    return {
+      sessions: {
+        relation: Model.HasManyRelation,
+        modelClass: `${__dirname}/Session`,
+        join: {
+          from: 'users.id',
+          to: 'sessions.userId',
+        },
+      },
+    }
+  }
+
+  findSessions() {
+    return this.$relatedQuery('sessions').whereNotDeleted()
+  }
 }
 
-export default mongoose.model('User', userSchema)
+export default User

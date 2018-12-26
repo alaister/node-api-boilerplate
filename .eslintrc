@@ -1,0 +1,10 @@
+{
+  "extends": ["env"],
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "rules": {
+    "require-jsdoc": "off",
+    "no-console": "warn"
+  }
+}

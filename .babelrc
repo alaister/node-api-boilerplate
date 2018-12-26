@@ -1,7 +1,3 @@
 {
-  "plugins": [
-    "transform-es2015-modules-commonjs",
-    "import-graphql",
-    ["transform-object-rest-spread", { "useBuiltIns": true }]
-  ]
+  "plugins": ["@babel/plugin-transform-modules-commonjs"]
 }
