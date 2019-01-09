@@ -21,7 +21,7 @@ export function formatUserValidationErrors(error) {
               field: key.split('.'),
               message: `${key} ${error.message}`,
             }
-        })
+        }),
       ),
     }
 

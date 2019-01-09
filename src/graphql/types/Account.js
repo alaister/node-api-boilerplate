@@ -2,25 +2,31 @@ import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from 'graphql'
 import { GraphQLDateTime } from 'graphql-iso-date'
 import {
   connectionArgs,
-  globalIdField,
   connectionFromArray,
+  globalIdField,
 } from 'graphql-relay'
 import { NodeInterface } from '../interfaces/Node'
+import Profile from './Profile'
 import SessionConnection from './SessionConnection'
 
-const User = new GraphQLObjectType({
-  name: 'User',
+const Account = new GraphQLObjectType({
+  name: 'Account',
   fields: {
     id: globalIdField('User'),
-    name: { type: GraphQLNonNull(GraphQLString) },
     email: { type: GraphQLNonNull(GraphQLString) },
     createdAt: { type: GraphQLNonNull(GraphQLDateTime) },
     updatedAt: { type: GraphQLNonNull(GraphQLDateTime) },
+    profile: {
+      type: GraphQLNonNull(Profile),
+      resolve(account) {
+        return account.findProfile()
+      },
+    },
     sessions: {
       type: SessionConnection,
       args: connectionArgs,
-      async resolve(user, args) {
-        const sessions = await user.findSessions()
+      async resolve(account, args) {
+        const sessions = await account.findSessions()
         return connectionFromArray(sessions, args)
       },
     },
@@ -28,4 +34,4 @@ const User = new GraphQLObjectType({
   interfaces: [NodeInterface],
 })
 
-export default User
+export default Account

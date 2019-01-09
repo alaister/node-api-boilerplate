@@ -1,10 +1,12 @@
 exports.up = function(knex) {
   return knex.schema.createTable('sessions', t => {
     t.uuid('id').primary()
-    t.specificType('userId', 'character(25)')
-      .notNullable()
+    t.specificType('accountId', 'character(25)').notNullable()
+    t.foreign('accountId')
       .references('id')
-      .inTable('users')
+      .inTable('accounts')
+      .onDelete('CASCADE')
+    t.index('accountId')
     t.specificType('country', 'character(2)')
       .notNullable()
       .defaultTo('XX')

@@ -1,7 +1,7 @@
-import User from '../types/User'
+import Account from '../types/Account'
 
 export default {
-  type: User,
+  type: Account,
   resolve(_root, _args, { currentUser }) {
     if (!currentUser) return null
 

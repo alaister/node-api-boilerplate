@@ -1,7 +1,6 @@
 exports.up = function(knex) {
-  return knex.schema.createTable('users', t => {
+  return knex.schema.createTable('accounts', t => {
     t.specificType('id', 'character(25)').primary()
-    t.string('name').notNullable()
     t.string('email')
       .notNullable()
       .unique()
@@ -16,5 +15,5 @@ exports.up = function(knex) {
 }
 
 exports.down = function(knex) {
-  return knex.schema.dropTableIfExists('users')
+  return knex.schema.dropTableIfExists('accounts')
 }

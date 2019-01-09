@@ -14,7 +14,7 @@ router.get('/', async ctx => {
         currentSession: s.id === ctx.session.id,
         data: undefined,
         deleted: undefined,
-        userId: undefined,
+        accountId: undefined,
       })),
     }
   }
@@ -27,7 +27,7 @@ router.get('/:id', async ctx => {
 
   if (!session) ctx.throw(404)
 
-  if (ctx.state.user.id !== session.userId) ctx.throw(403)
+  if (ctx.state.user.id !== session.accountId) ctx.throw(403)
 
   ctx.body = {
     data: {
@@ -35,7 +35,7 @@ router.get('/:id', async ctx => {
       currentSession: session.id === ctx.session.id,
       data: undefined,
       deleted: undefined,
-      userId: undefined,
+      accountId: undefined,
     },
   }
 })
@@ -47,7 +47,7 @@ router.delete('/:id', async ctx => {
 
   if (!session) ctx.throw(404)
 
-  if (ctx.state.user.id !== session.userId) ctx.throw(403)
+  if (ctx.state.user.id !== session.accountId) ctx.throw(403)
 
   await Session.delete(ctx.params.id)
   ctx.status = 204

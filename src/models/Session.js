@@ -9,10 +9,10 @@ class Session extends SoftDelete(Model) {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['userId', 'expires', 'ip'],
+      required: ['accountId', 'expires', 'ip'],
       properties: {
         id: { type: 'string' },
-        userId: { type: 'string', minLength: 1, maxLength: 255 },
+        accountId: { type: 'string' },
         country: { type: 'string' },
         ip: {
           type: 'string',
@@ -33,12 +33,12 @@ class Session extends SoftDelete(Model) {
 
   static get relationMappings() {
     return {
-      user: {
+      account: {
         relation: Model.BelongsToOneRelation,
-        modelClass: `${__dirname}/User`,
+        modelClass: `${__dirname}/Account`,
         join: {
-          from: 'sessions.userId',
-          to: 'users.id',
+          from: 'sessions.accountId',
+          to: 'accounts.id',
         },
       },
     }

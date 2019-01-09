@@ -1,7 +1,8 @@
 import Dataloader from 'dataloader'
 
-export default function dataloadersFactory(actions) {
+export default function dataloadersFactory({ Account, Profile }) {
   return {
-    userLoader: new Dataloader(actions.user.batchGetUsers),
+    accountLoader: new Dataloader(Account.batchGetAccounts),
+    profileLoader: new Dataloader(Profile.batchGetProfiles),
   }
 }
