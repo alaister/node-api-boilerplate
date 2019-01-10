@@ -1,18 +1,20 @@
 import passport from 'koa-passport'
 import { Strategy as LocalStrategy } from 'passport-local'
-import Account from '../models/Account'
+import User from '../models/User'
 
 passport.serializeUser((user, done) => {
   done(null, user.$omit('password').toJSON())
 })
 
 passport.deserializeUser((user, done) => {
-  done(null, new Account().$set(user))
+  done(null, new User().$set(user))
 })
 
 passport.use(
   new LocalStrategy({ usernameField: 'email' }, (email, password, done) => {
-    Account.findOne({ email })
+    User.query()
+      .where({ email })
+      .first()
       .then(user => {
         if (!user)
           return done(null, false, {

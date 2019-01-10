@@ -1,55 +1,55 @@
 import Router from 'koa-router'
-import Session from '../../models/Session'
+import accountServiceFactory from '../../services/account'
+import {
+  AuthenticationError,
+  handleRestErrors,
+  NotFoundError,
+} from '../../utils/errors'
 
 const router = new Router()
 
-router.get('/', async ctx => {
-  if (!ctx.state.user) ctx.throw(401)
-  else {
-    const sessions = await ctx.state.user.findSessions()
+router.get('/', handleRestErrors, async ctx => {
+  const accountService = accountServiceFactory({
+    currentUser: ctx.state.user || null,
+  })
 
-    ctx.body = {
-      data: sessions.map(s => ({
-        ...s,
-        currentSession: s.id === ctx.session.id,
-        data: undefined,
-        deleted: undefined,
-        accountId: undefined,
-      })),
-    }
+  if (!ctx.state.user) throw new AuthenticationError()
+  const sessions = await accountService.getSessionsByUserId(ctx.state.user.id)
+  ctx.body = {
+    data: sessions.map(s => ({
+      ...s,
+      currentSession: s.id === ctx.session.id,
+      data: undefined,
+      deleted: undefined,
+      userId: undefined,
+    })),
   }
 })
 
-router.get('/:id', async ctx => {
-  if (!ctx.state.user) ctx.throw(401)
+router.get('/:id', handleRestErrors, async ctx => {
+  const accountService = accountServiceFactory({
+    currentUser: ctx.state.user || null,
+  })
 
-  const session = await Session.findOne({ id: ctx.params.id })
-
-  if (!session) ctx.throw(404)
-
-  if (ctx.state.user.id !== session.accountId) ctx.throw(403)
-
+  const session = await accountService.getSession({ id: ctx.params.id })
+  if (!session) throw new NotFoundError()
   ctx.body = {
     data: {
       ...session,
       currentSession: session.id === ctx.session.id,
       data: undefined,
       deleted: undefined,
-      accountId: undefined,
+      userId: undefined,
     },
   }
 })
 
-router.delete('/:id', async ctx => {
-  if (!ctx.state.user) ctx.throw(401)
+router.delete('/:id', handleRestErrors, async ctx => {
+  const accountService = accountServiceFactory({
+    currentUser: ctx.state.user || null,
+  })
 
-  const session = await Session.findOne({ id: ctx.params.id })
-
-  if (!session) ctx.throw(404)
-
-  if (ctx.state.user.id !== session.accountId) ctx.throw(403)
-
-  await Session.delete(ctx.params.id)
+  await accountService.deleteSession(ctx.params.id)
   ctx.status = 204
 })
 

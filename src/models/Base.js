@@ -18,22 +18,6 @@ class BaseModel extends CuidModel(Model) {
       this.updatedAt = new Date().toISOString()
     })
   }
-
-  static create(data) {
-    return this.query().insert(data)
-  }
-
-  static findOne(where) {
-    return this.query()
-      .where(where)
-      .first()
-  }
-
-  static delete(id) {
-    return this.query()
-      .where('id', id)
-      .delete()
-  }
 }
 
 export default BaseModel

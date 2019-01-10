@@ -11,7 +11,9 @@ class CustomSessionStore {
   }
 
   async get(key) {
-    const session = await Session.findOne({ id: key })
+    const session = await Session.query()
+      .where({ id: key })
+      .first()
 
     if (!session) return null
 
@@ -19,22 +21,29 @@ class CustomSessionStore {
   }
 
   async set(key, sess) {
-    const session = await Session.findOne({ id: key })
+    const session = await Session.query()
+      .where({ id: key })
+      .first()
 
     if (!session)
-      await Session.create({
+      await Session.query().insert({
         id: key,
         data: sess,
         expires: new Date(sess._expire).toISOString(),
-        accountId: sess.passport.user.id,
+        userId: sess.passport.user.id,
         ip: this.ip,
         country: this.country,
       })
-    else await session.$query().patch({ data: sess })
+    else
+      await await Session.query()
+        .where({ id: key })
+        .patch({ data: sess })
   }
 
   async destroy(key) {
-    await Session.delete(key)
+    await Session.query()
+      .where('id', key)
+      .delete()
   }
 }
 

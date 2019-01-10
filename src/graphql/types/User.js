@@ -9,8 +9,8 @@ import { NodeInterface } from '../interfaces/Node'
 import Profile from './Profile'
 import SessionConnection from './SessionConnection'
 
-const Account = new GraphQLObjectType({
-  name: 'Account',
+const User = new GraphQLObjectType({
+  name: 'User',
   fields: {
     id: globalIdField('User'),
     email: { type: GraphQLNonNull(GraphQLString) },
@@ -18,15 +18,15 @@ const Account = new GraphQLObjectType({
     updatedAt: { type: GraphQLNonNull(GraphQLDateTime) },
     profile: {
       type: GraphQLNonNull(Profile),
-      resolve(account) {
-        return account.findProfile()
+      resolve(user, _args, { socialService }) {
+        return socialService.getProfileByUserId(user.id)
       },
     },
     sessions: {
       type: SessionConnection,
       args: connectionArgs,
-      async resolve(account, args) {
-        const sessions = await account.findSessions()
+      async resolve(user, args, { accountService }) {
+        const sessions = await accountService.getSessionsByUserId(user.id)
         return connectionFromArray(sessions, args)
       },
     },
@@ -34,4 +34,4 @@ const Account = new GraphQLObjectType({
   interfaces: [NodeInterface],
 })
 
-export default Account
+export default User

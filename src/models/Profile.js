@@ -2,7 +2,7 @@ import { Model } from 'objection'
 import { UniqueModel } from '../db/objection'
 import BaseModel from './Base'
 
-class Profile extends UniqueModel(['accountId'])(BaseModel) {
+class Profile extends UniqueModel(['userId'])(BaseModel) {
   static get tableName() {
     return 'profiles'
   }
@@ -10,10 +10,10 @@ class Profile extends UniqueModel(['accountId'])(BaseModel) {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['accountId', 'givenName', 'familyName'],
+      required: ['userId', 'givenName', 'familyName'],
       properties: {
         id: { type: 'string' },
-        accountId: { type: 'string' },
+        userId: { type: 'string' },
         givenName: { type: 'string', minLength: 1, maxLength: 255 },
         familyName: { type: 'string', minLength: 1, maxLength: 255 },
         createdAt: { type: 'string', format: 'date-time' },
@@ -24,20 +24,27 @@ class Profile extends UniqueModel(['accountId'])(BaseModel) {
 
   static get relationMappings() {
     return {
-      account: {
+      user: {
         relation: Model.BelongsToOneRelation,
-        modelClass: `${__dirname}/Account`,
+        modelClass: `${__dirname}/User`,
         join: {
-          from: 'profiles.accountId',
-          to: 'accounts.id',
+          from: 'profiles.userId',
+          to: 'users.id',
         },
       },
     }
   }
 
-  static async batchGetProfiles(ids) {
-    const profiles = await this.query().whereIn('id', ids)
+  static async batchGetById(ids) {
+    const profiles = await Profile.query().whereIn('id', ids)
     return ids.map(id => profiles.find(profile => profile.id === id) || null)
+  }
+
+  static async batchGetByUserId(userIds) {
+    const profiles = await Profile.query().whereIn('userId', userIds)
+    return userIds.map(
+      userId => profiles.find(profile => profile.userId === userId) || null
+    )
   }
 }
 

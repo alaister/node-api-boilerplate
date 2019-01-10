@@ -1,20 +1,28 @@
 import Router from 'koa-router'
 import passport from '../../auth/passport'
-import Account from '../../models/Account'
-import { formatUserValidationErrors } from '../../utils/errors'
+import accountServiceFactory from '../../services/account'
+import {
+  formatUserValidationErrors,
+  handleRestErrors,
+  AuthenticationError,
+} from '../../utils/errors'
 
 const router = new Router()
 
 router.post('/register', async ctx => {
+  const accountService = accountServiceFactory({
+    currentUser: ctx.state.user || null,
+  })
+
   try {
-    const account = await Account.register(ctx.request.body)
+    const user = await accountService.registerUser(ctx.request.body)
 
     ctx.status = 201
     ctx.body = {
       data: {
-        account: {
-          ...account.$omit('password').$toJson(),
-          profile: account.profile.$omit('accountId').$toJson(),
+        user: {
+          ...user.$omit('password').$toJson(),
+          profile: user.profile.$omit('userId').$toJson(),
         },
         userErrors: [],
       },
@@ -23,7 +31,7 @@ router.post('/register', async ctx => {
     ctx.status = 422
     ctx.body = {
       data: {
-        account: null,
+        user: null,
         profile: null,
         ...formatUserValidationErrors(err),
       },
@@ -66,7 +74,9 @@ router.post('/login', ctx => {
   })(ctx)
 })
 
-router.get('/logout', ctx => {
+router.get('/logout', handleRestErrors, ctx => {
+  if (!ctx.state.user) throw new AuthenticationError()
+
   ctx.logout()
   ctx.session = null
   ctx.body = { data: { user: null, userErrors: [] } }

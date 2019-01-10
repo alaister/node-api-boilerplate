@@ -1,8 +1,11 @@
 import Dataloader from 'dataloader'
+import Profile from '../models/Profile'
+import User from '../models/User'
 
-export default function dataloadersFactory({ Account, Profile }) {
+export default function dataloadersFactory() {
   return {
-    accountLoader: new Dataloader(Account.batchGetAccounts),
-    profileLoader: new Dataloader(Profile.batchGetProfiles),
+    userLoader: new Dataloader(User.batchGetById),
+    profileLoader: new Dataloader(Profile.batchGetById),
+    profileByUserIdLoader: new Dataloader(Profile.batchGetByUserId),
   }
 }
