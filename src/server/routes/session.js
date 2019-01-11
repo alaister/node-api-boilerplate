@@ -14,10 +14,14 @@ router.get('/', handleRestErrors, async ctx => {
   })
 
   if (!ctx.state.user) throw new AuthenticationError()
-  const sessions = await accountService.getSessionsByUserId(ctx.state.user.id)
+  const sessions = await accountService.getPaginatedSessionsByUserId(
+    {},
+    ctx.state.user.id
+  )
+  console.log(ctx.session.id)
   ctx.body = {
-    data: sessions.map(s => ({
-      ...s,
+    data: sessions.edges.map(s => ({
+      ...s.node,
       currentSession: s.id === ctx.session.id,
       data: undefined,
       deleted: undefined,

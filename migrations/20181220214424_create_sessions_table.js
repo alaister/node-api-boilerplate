@@ -1,6 +1,6 @@
 exports.up = function(knex) {
   return knex.schema.createTable('sessions', t => {
-    t.uuid('id').primary()
+    t.specificType('id', 'character(25)').primary()
     t.specificType('userId', 'character(25)').notNullable()
     t.foreign('userId')
       .references('id')

@@ -35,7 +35,11 @@ export async function handleRestErrors(ctx, next) {
     if (error instanceof AuthenticationError) ctx.throw(401)
     else if (error instanceof AuthorizationError) ctx.throw(403)
     else if (error instanceof NotFoundError) ctx.throw(404)
-    else ctx.throw(500)
+    else {
+      /* eslint-disable-next-line no-console */
+      console.log('HTTP Error:', error)
+      ctx.throw(500)
+    }
   }
 }
 
@@ -51,17 +55,29 @@ export const graphqlDevErrorLogger = async (_ctx, next) => {
   }
 }
 
-export function NotFoundError(message) {
-  this.name = 'NotFoundError'
-  this.message = message
+export class NotFoundError extends Error {
+  constructor(message = 'Not Found') {
+    super(message)
+    this.name = 'NotFoundError'
+    this.expose = true
+    this.status = 404
+  }
 }
 
-export function AuthenticationError(message) {
-  this.name = 'AuthenticationError'
-  this.message = 'You must log in to do that' || message
+export class AuthenticationError extends Error {
+  constructor(message = 'You must log in to do that') {
+    super(message)
+    this.name = 'AuthenticationError'
+    this.expose = true
+    this.status = 401
+  }
 }
 
-export function AuthorizationError(message) {
-  this.name = 'AuthorizationError'
-  this.message = 'You are not allowed to do that' || message
+export class AuthorizationError extends Error {
+  constructor(message = 'You are not allowed to do that') {
+    super(message)
+    this.name = 'AuthorizationError'
+    this.expose = true
+    this.expose = 403
+  }
 }

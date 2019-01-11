@@ -7,6 +7,7 @@ import {
   AuthorizationError,
   NotFoundError,
 } from '../utils/errors'
+import { addPaginationToQuery } from '../utils/pagination'
 
 export default function accountServiceFactory({
   currentUser = null,
@@ -22,7 +23,7 @@ export default function accountServiceFactory({
         throw new AuthenticationError(
           'You must be logged out to register a new user'
         )
-
+      console.log('wow')
       return transaction(User.knex(), async trx => {
         const user = await User.query(trx).insert({ email, password })
         await user
@@ -83,15 +84,20 @@ export default function accountServiceFactory({
         .first()
     },
 
-    async getSessionsByUserId(userId) {
+    async getPaginatedSessionsByUserId(paginationArgs, userId) {
       if (!currentUser) throw new AuthenticationError()
 
-      const sessions = (await Session.query()
-        .whereNotDeleted()
-        .where({ userId })).filter(session => session.userId === currentUser.id)
+      if (currentUser.id !== userId)
+        throw new AuthorizationError('You can only view your own sessions')
 
-      if (sessions.length <= 0) throw new NotFoundError()
-      else return sessions
+      const result = await addPaginationToQuery(
+        Session.query()
+          .whereNotDeleted()
+          .where({ userId }),
+        paginationArgs
+      )
+
+      return result
     },
 
     async deleteSession(id) {

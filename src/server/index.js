@@ -1,8 +1,8 @@
+import cuid from 'cuid'
 import Koa from 'koa'
 import bodyParser from 'koa-bodyparser'
 import Router from 'koa-router'
 import session from 'koa-session'
-import uuidV4 from 'uuid/v4'
 import CustomSessionStore from '../auth/CustomSessionStore'
 import passport from '../auth/passport'
 import authRouter from './routes/auth'
@@ -35,7 +35,7 @@ app
       {
         key: 'app.sid',
         maxAge: 14 * 24 * 60 * 60 * 1000,
-        genid: uuidV4,
+        genid: cuid,
         renew: true,
         ContextStore: CustomSessionStore,
       },

@@ -1,10 +1,6 @@
 import { GraphQLNonNull, GraphQLObjectType, GraphQLString } from 'graphql'
 import { GraphQLDateTime } from 'graphql-iso-date'
-import {
-  connectionArgs,
-  connectionFromArray,
-  globalIdField,
-} from 'graphql-relay'
+import { connectionArgs, globalIdField } from 'graphql-relay'
 import { NodeInterface } from '../interfaces/Node'
 import Profile from './Profile'
 import SessionConnection from './SessionConnection'
@@ -25,9 +21,8 @@ const User = new GraphQLObjectType({
     sessions: {
       type: SessionConnection,
       args: connectionArgs,
-      async resolve(user, args, { accountService }) {
-        const sessions = await accountService.getSessionsByUserId(user.id)
-        return connectionFromArray(sessions, args)
+      resolve(user, args, { accountService }) {
+        return accountService.getPaginatedSessionsByUserId(args, user.id)
       },
     },
   },
