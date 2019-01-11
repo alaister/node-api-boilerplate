@@ -13,6 +13,7 @@ class CustomSessionStore {
   async get(key) {
     const session = await Session.query()
       .where({ id: key })
+      .whereNotDeleted()
       .first()
 
     if (!session) return null
@@ -37,7 +38,7 @@ class CustomSessionStore {
     else
       await await Session.query()
         .where({ id: key })
-        .patch({ data: sess })
+        .patch({ data: sess, deleted: false })
   }
 
   async destroy(key) {

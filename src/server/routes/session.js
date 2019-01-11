@@ -18,11 +18,11 @@ router.get('/', handleRestErrors, async ctx => {
     {},
     ctx.state.user.id
   )
-  console.log(ctx.session.id)
+
   ctx.body = {
     data: sessions.edges.map(s => ({
       ...s.node,
-      currentSession: s.id === ctx.session.id,
+      currentSession: s.node.id === ctx.session.id,
       data: undefined,
       deleted: undefined,
       userId: undefined,

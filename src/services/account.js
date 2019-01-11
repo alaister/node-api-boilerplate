@@ -105,6 +105,7 @@ export default function accountServiceFactory({
 
       const session = await Session.query()
         .where('id', id)
+        .whereNotDeleted()
         .first()
 
       if (!session) throw new NotFoundError()
