@@ -1,3 +1,5 @@
+import { base64, unbase64 } from './encoding'
+
 export async function addPaginationToQuery(
   query,
   { after, first, before, last } = {}
@@ -10,8 +12,8 @@ export async function addPaginationToQuery(
   if (after || first) query = query.orderBy('id', 'desc')
   if (before || last) query = query.orderBy('id', 'zsc')
 
-  if (after) query = query.where('id', '<', after)
-  if (before) query = query.where('id', '>', before)
+  if (after) query = query.where('id', '<', unbase64(after))
+  if (before) query = query.where('id', '>', unbase64(before))
   if (first) {
     query = query.limit(first)
     hasPreviousPage = false
@@ -33,6 +35,6 @@ export async function addPaginationToQuery(
       hasNextPage,
       hasPreviousPage,
     },
-    edges: results.map(r => ({ cursor: r.id, node: r })),
+    edges: results.map(r => ({ cursor: base64(r.id), node: r })),
   }
 }
