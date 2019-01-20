@@ -1,5 +1,6 @@
 import { errorHandler, execute } from 'graphql-api-koa'
 import koaPlayground from 'graphql-playground-middleware-koa'
+import { graphqlUploadKoa } from 'graphql-upload'
 import Router from 'koa-router'
 import dataloadersFactory from '../../dataloaders'
 import schema from '../../graphql/schema'
@@ -13,6 +14,7 @@ router.get('/', koaPlayground({ endpoint: '/api/graphql' }))
 router.post(
   '/',
   errorHandler(),
+  graphqlUploadKoa({ maxFileSize: 10000000, maxFiles: 10 }),
   graphqlDevErrorLogger,
   execute({
     schema,

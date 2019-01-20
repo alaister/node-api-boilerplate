@@ -23,7 +23,7 @@ export default function accountServiceFactory({
         throw new AuthenticationError(
           'You must be logged out to register a new user'
         )
-      console.log('wow')
+
       return transaction(User.knex(), async trx => {
         const user = await User.query(trx).insert({ email, password })
         await user

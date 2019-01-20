@@ -25,6 +25,7 @@
     "graphql-playground-middleware-koa": "^1.6.8",
     "graphql-relay": "^0.5.5",
     "graphql-type-json": "^0.2.1",
+    "graphql-upload": "^8.0.4",
     "knex": "^0.16.3",
     "koa": "^2.6.2",
     "koa-bodyparser": "^4.2.1",

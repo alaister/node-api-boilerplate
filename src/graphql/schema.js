@@ -1,8 +1,10 @@
 import { GraphQLObjectType, GraphQLSchema } from 'graphql'
 import { GraphQLDate, GraphQLDateTime, GraphQLTime } from 'graphql-iso-date'
 import GraphQLJSON from 'graphql-type-json'
+import { GraphQLUpload } from 'graphql-upload'
 import { nodeField } from './interfaces/Node'
 import profileUpdate from './mutations/profileUpdate'
+import profileUploadAvatarImage from './mutations/profileUploadAvatarImage'
 import viewer from './queries/viewer'
 
 const schema = new GraphQLSchema({
@@ -10,6 +12,7 @@ const schema = new GraphQLSchema({
   Time: GraphQLTime,
   DateTime: GraphQLDateTime,
   JSON: GraphQLJSON,
+  Upload: GraphQLUpload,
   query: new GraphQLObjectType({
     name: 'RootQuery',
     fields: {
@@ -21,6 +24,7 @@ const schema = new GraphQLSchema({
     name: 'RootMutation',
     fields: {
       profileUpdate,
+      profileUploadAvatarImage,
     },
   }),
 })

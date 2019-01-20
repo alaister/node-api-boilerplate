@@ -32,7 +32,6 @@ router.post('/register', async ctx => {
     ctx.body = {
       data: {
         user: null,
-        profile: null,
         ...formatUserValidationErrors(err),
       },
     }
