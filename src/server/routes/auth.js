@@ -19,7 +19,14 @@ router.get('/me', async ctx => {
 
   const profile = await socialService.getProfileByUserId(ctx.state.user.id)
 
-  ctx.body = { data: { ...ctx.state.user, profile: profile.$omit('userId') } }
+  ctx.body = {
+    data: {
+      user: {
+        ...ctx.state.user.$toJson(),
+        profile: profile.$omit('userId').$toJson(),
+      },
+    },
+  }
 })
 
 router.post('/register', async ctx => {
