@@ -1,6 +1,7 @@
 import Router from 'koa-router'
 import passport from '../../auth/passport'
 import accountServiceFactory from '../../services/account'
+import socialServiceFactory from '../../services/social'
 import {
   formatUserValidationErrors,
   handleRestErrors,
@@ -8,6 +9,18 @@ import {
 } from '../../utils/errors'
 
 const router = new Router()
+
+router.get('/me', async ctx => {
+  if (!ctx.state.user) ctx.throw(401)
+
+  const socialService = socialServiceFactory({
+    currentUser: ctx.state.user || null,
+  })
+
+  const profile = await socialService.getProfileByUserId(ctx.state.user.id)
+
+  ctx.body = { data: { ...ctx.state.user, profile: profile.$omit('userId') } }
+})
 
 router.post('/register', async ctx => {
   const accountService = accountServiceFactory({
