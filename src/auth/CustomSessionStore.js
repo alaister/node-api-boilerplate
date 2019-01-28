@@ -31,7 +31,7 @@ class CustomSessionStore {
         id: key,
         data: sess,
         expires: new Date(sess._expire).toISOString(),
-        userId: sess.passport.user.id,
+        idUser: sess.passport.user.id,
         ip: this.ip,
         country: this.country,
       })

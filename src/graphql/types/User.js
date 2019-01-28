@@ -15,14 +15,14 @@ const User = new GraphQLObjectType({
     profile: {
       type: GraphQLNonNull(Profile),
       resolve(user, _args, { socialService }) {
-        return socialService.getProfileByUserId(user.id)
+        return socialService.getProfileByidUser(user.id)
       },
     },
     sessions: {
       type: SessionConnection,
       args: connectionArgs,
       resolve(user, args, { accountService }) {
-        return accountService.getPaginatedSessionsByUserId(args, user.id)
+        return accountService.getPaginatedSessionsByidUser(args, user.id)
       },
     },
   },

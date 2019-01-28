@@ -15,18 +15,18 @@ export default function socialServiceFactory({
       return dataloaders.profileLoader.load(id)
     },
 
-    getProfileByUserId(userId) {
-      return dataloaders.profileByUserIdLoader.load(userId)
+    getProfileByidUser(idUser) {
+      return dataloaders.profileByidUserLoader.load(idUser)
     },
 
-    async updateProfile(userId, data) {
+    async updateProfile(idUser, data) {
       if (!currentUser) throw new AuthenticationError()
 
-      if (currentUser.id !== userId)
+      if (currentUser.id !== idUser)
         throw new AuthorizationError('You can only update your own profile')
 
       const profile = await Profile.query()
-        .where({ userId })
+        .where({ idUser })
         .first()
 
       if (!profile) throw new NotFoundError()

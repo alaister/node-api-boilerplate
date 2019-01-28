@@ -14,7 +14,7 @@ router.get('/', handleRestErrors, async ctx => {
   })
 
   if (!ctx.state.user) throw new AuthenticationError()
-  const sessions = await accountService.getPaginatedSessionsByUserId(
+  const sessions = await accountService.getPaginatedSessionsByidUser(
     {},
     ctx.state.user.id
   )
@@ -25,7 +25,7 @@ router.get('/', handleRestErrors, async ctx => {
       currentSession: s.node.id === ctx.session.id,
       data: undefined,
       deleted: undefined,
-      userId: undefined,
+      idUser: undefined,
     })),
   }
 })
@@ -43,7 +43,7 @@ router.get('/:id', handleRestErrors, async ctx => {
       currentSession: session.id === ctx.session.id,
       data: undefined,
       deleted: undefined,
-      userId: undefined,
+      idUser: undefined,
     },
   }
 })

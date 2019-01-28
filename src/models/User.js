@@ -33,7 +33,7 @@ class User extends PasswordModel(UniqueModel(['email'])(BaseModel)) {
         modelClass: `${__dirname}/Session`,
         join: {
           from: 'users.id',
-          to: 'sessions.userId',
+          to: 'sessions.idUser',
         },
       },
       profile: {
@@ -41,7 +41,7 @@ class User extends PasswordModel(UniqueModel(['email'])(BaseModel)) {
         modelClass: `${__dirname}/Profile`,
         join: {
           from: 'users.id',
-          to: 'profiles.userId',
+          to: 'profiles.idUser',
         },
       },
     }

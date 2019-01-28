@@ -6,6 +6,6 @@ export default function dataloadersFactory() {
   return {
     userLoader: new Dataloader(User.batchGetById),
     profileLoader: new Dataloader(Profile.batchGetById),
-    profileByUserIdLoader: new Dataloader(Profile.batchGetByUserId),
+    profileByidUserLoader: new Dataloader(Profile.batchGetByidUser),
   }
 }

@@ -28,7 +28,7 @@ export default function accountServiceFactory({
         const user = await User.query(trx).insert({ email, password })
         await user
           .$relatedQuery('profile', trx)
-          .insert({ givenName, familyName, userId: user.id })
+          .insert({ givenName, familyName, idUser: user.id })
 
         return user
       })
@@ -72,7 +72,7 @@ export default function accountServiceFactory({
      */
 
     createSession(data) {
-      return Session.query().insert({ ...data, userId: currentUser.id })
+      return Session.query().insert({ ...data, idUser: currentUser.id })
     },
 
     getSession(where) {
@@ -80,20 +80,20 @@ export default function accountServiceFactory({
 
       return Session.query()
         .whereNotDeleted()
-        .where({ ...where, userId: currentUser.id })
+        .where({ ...where, idUser: currentUser.id })
         .first()
     },
 
-    async getPaginatedSessionsByUserId(paginationArgs, userId) {
+    async getPaginatedSessionsByidUser(paginationArgs, idUser) {
       if (!currentUser) throw new AuthenticationError()
 
-      if (currentUser.id !== userId)
+      if (currentUser.id !== idUser)
         throw new AuthorizationError('You can only view your own sessions')
 
       const result = await addPaginationToQuery(
         Session.query()
           .whereNotDeleted()
-          .where({ userId }),
+          .where({ idUser }),
         paginationArgs
       )
 
@@ -110,7 +110,7 @@ export default function accountServiceFactory({
 
       if (!session) throw new NotFoundError()
 
-      if (session.userId !== currentUser.id) throw new NotFoundError()
+      if (session.idUser !== currentUser.id) throw new NotFoundError()
 
       return Session.query()
         .where('id', id)

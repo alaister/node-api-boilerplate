@@ -17,13 +17,13 @@ router.get('/me', async ctx => {
     currentUser: ctx.state.user || null,
   })
 
-  const profile = await socialService.getProfileByUserId(ctx.state.user.id)
+  const profile = await socialService.getProfileByidUser(ctx.state.user.id)
 
   ctx.body = {
     data: {
       user: {
         ...ctx.state.user.$toJson(),
-        profile: profile.$omit('userId').$toJson(),
+        profile: profile.$omit('idUser').$toJson(),
       },
     },
   }
@@ -42,7 +42,7 @@ router.post('/register', async ctx => {
       data: {
         user: {
           ...user.$omit('password').$toJson(),
-          profile: user.profile.$omit('userId').$toJson(),
+          profile: user.profile.$omit('idUser').$toJson(),
         },
         userErrors: [],
       },

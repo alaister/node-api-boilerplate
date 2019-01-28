@@ -1,10 +1,10 @@
 exports.up = function(knex) {
   return knex.schema.createTable('profiles', t => {
     t.specificType('id', 'character(25)').primary()
-    t.specificType('userId', 'character(25)')
+    t.specificType('idUser', 'character(25)')
       .notNullable()
       .unique()
-    t.foreign('userId')
+    t.foreign('idUser')
       .references('id')
       .inTable('users')
       .onDelete('CASCADE')
