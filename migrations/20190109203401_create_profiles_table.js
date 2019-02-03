@@ -10,6 +10,7 @@ exports.up = function(knex) {
       .onDelete('CASCADE')
     t.string('givenName').notNullable()
     t.string('familyName').notNullable()
+    t.string('avatarUrl').nullable()
     t.timestamp('createdAt')
       .notNullable()
       .defaultTo(knex.fn.now())

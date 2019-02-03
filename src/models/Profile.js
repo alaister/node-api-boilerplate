@@ -16,6 +16,7 @@ class Profile extends UniqueModel(['idUser'])(BaseModel) {
         idUser: { type: 'string' },
         givenName: { type: 'string', minLength: 1, maxLength: 255 },
         familyName: { type: 'string', minLength: 1, maxLength: 255 },
+        avatarUrl: { type: 'string' },
         createdAt: { type: 'string', format: 'date-time' },
         updatedAt: { type: 'string', format: 'date-time' },
       },
